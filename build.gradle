@@ -28,6 +28,8 @@ dependencies {
 }
 
 group = 'com.kephri'
+// The plugin hub build reads project.version; without it the CI build fails.
+version = '1.0'
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
@@ -38,7 +40,9 @@ tasks.register('run', JavaExec) {
 	classpath = sourceSets.test.runtimeClasspath
 	mainClass = pluginMainClass
 
-	jvmArgs "-ea"
+	// RuneLite insists on -ea, but its own GPU plugin trips an assertion
+	// mid-fight that the normal client never checks, so skip that package.
+	jvmArgs "-ea", "-da:net.runelite.client.plugins.gpu..."
 	args "--developer-mode", "--debug"
 }
 
